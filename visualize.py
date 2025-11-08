@@ -391,21 +391,26 @@ def visualize_cube_matplotlib(state: CubeState, title: str = "魔方状态"):
     ax.text(legend_x, legend_y, "图例:", fontsize=9, fontweight='bold')
     
     legend_items = [
-        ("lightgreen", "角块未动"),
-        ("lightcoral", "角块已动"),
-        ("lightblue", "棱块未动"),
-        ("lightsalmon", "棱块已动"),
+        ("lightgreen", "角块：位置+朝向都正常"),
+        ("lightyellow", "角块：只有朝向变"),
+        ("lightcoral", "角块：只有位置变"),
+        ("indianred", "角块：位置+朝向都变"),
+        ("lightblue", "棱块：位置+朝向都正常"),
+        ("lightcyan", "棱块：只有朝向变"),
+        ("lightsalmon", "棱块：只有位置变"),
+        ("darksalmon", "棱块：位置+朝向都变"),
     ]
     
     for i, (color, label) in enumerate(legend_items):
-        y = legend_y - 0.35 - i * 0.35
-        rect = patches.Rectangle((legend_x, y), 0.25, 0.25, facecolor=color, edgecolor='black', linewidth=1)
+        y = legend_y - 0.3 - i * 0.28
+        rect = patches.Rectangle((legend_x, y), 0.2, 0.2, facecolor=color, edgecolor='black', linewidth=0.8)
         ax.add_patch(rect)
-        ax.text(legend_x + 0.35, y + 0.12, label, fontsize=7, va='center')
+        ax.text(legend_x + 0.3, y + 0.1, label, fontsize=6, va='center')
     
-    # 添加说明
-    ax.text(legend_x, legend_y - 1.7, "注: U/L/F/R/B/D", fontsize=6, style='italic')
-    ax.text(legend_x, legend_y - 2.0, "为面中心（固定）", fontsize=6, style='italic')
+    # 朝向符号说明
+    ax.text(legend_x, legend_y - 2.6, "朝向符号:", fontsize=6, fontweight='bold')
+    ax.text(legend_x, legend_y - 2.85, "↻=顺时针 ↺=逆时针 ⟲=翻转", fontsize=5.5)
+    ax.text(legend_x, legend_y - 3.1, "注: U/L/F/R/B/D为面中心", fontsize=5.5, style='italic')
     
     # 统计信息（右上角）
     corner_moved = sum(1 for i in range(8) if state.corners[i] != i)
@@ -579,21 +584,55 @@ def interactive_cube_gui():
                     if pos_name in corner_names:
                         pos_idx = corner_names.index(pos_name)
                         actual_block = state.corners[pos_idx]
+                        ori = state.corner_ori[pos_idx]
                         is_moved = actual_block != pos_idx
+                        
+                        # 标签：显示位置，如果朝向!=0则添加标记
                         if is_moved:
                             block_label = f"{pos_idx}→{actual_block}"
                         else:
                             block_label = str(pos_idx)
-                        color = "lightcoral" if is_moved else "lightgreen"
+                        
+                        # 添加朝向标记
+                        if ori == 1:
+                            block_label += "↻"  # 顺时针
+                        elif ori == 2:
+                            block_label += "↺"  # 逆时针
+                        
+                        # 颜色：考虑朝向变化
+                        if is_moved and ori != 0:
+                            color = "indianred"  # 位置和朝向都变了
+                        elif is_moved:
+                            color = "lightcoral"  # 只有位置变了
+                        elif ori != 0:
+                            color = "lightyellow"  # 只有朝向变了
+                        else:
+                            color = "lightgreen"  # 都没变
                     elif pos_name in edge_names:
                         pos_idx = edge_names.index(pos_name)
                         actual_block = state.edges[pos_idx]
+                        ori = state.edge_ori[pos_idx]
                         is_moved = actual_block != pos_idx
+                        
+                        # 标签：显示位置，如果翻转则添加标记
                         if is_moved:
                             block_label = f"{pos_idx}→{actual_block}"
                         else:
                             block_label = str(pos_idx)
-                        color = "lightsalmon" if is_moved else "lightblue"
+                        
+                        # 添加朝向标记
+                        if ori == 1:
+                            block_label += "⟲"  # 翻转
+                        
+                        # 颜色：考虑朝向变化
+                        if is_moved and ori != 0:
+                            color = "darksalmon"  # 位置和朝向都变了
+                        elif is_moved:
+                            color = "lightsalmon"  # 只有位置变了
+                        elif ori != 0:
+                            color = "lightcyan"  # 只有朝向变了
+                        else:
+                            color = "lightblue"  # 都没变
                     else:
                         color = "lightgray"
                         block_label = label
@@ -625,27 +664,32 @@ def interactive_cube_gui():
             fontsize = 13
         ax_main.text(6, 9.2, title_text or "交互式魔方", ha='center', fontsize=fontsize, fontweight='bold')
         
-        # 图例（左上角）
+        # 图例（左上角）- 包含朝向说明
         legend_x = -0.3
         legend_y = 8.8
-        ax_main.text(legend_x, legend_y, "图例:", fontsize=9, fontweight='bold')
+        ax_main.text(legend_x, legend_y, "图例:", fontsize=8, fontweight='bold')
         
         legend_items = [
-            ("lightgreen", "角块未动"),
-            ("lightcoral", "角块已动"),
-            ("lightblue", "棱块未动"),
-            ("lightsalmon", "棱块已动"),
+            ("lightgreen", "角:正常"),
+            ("lightyellow", "角:朝向变"),
+            ("lightcoral", "角:位置变"),
+            ("indianred", "角:都变"),
+            ("lightblue", "棱:正常"),
+            ("lightcyan", "棱:朝向变"),
+            ("lightsalmon", "棱:位置变"),
+            ("darksalmon", "棱:都变"),
         ]
         
         for i, (color, label) in enumerate(legend_items):
-            y = legend_y - 0.35 - i * 0.35
-            rect = patches.Rectangle((legend_x, y), 0.25, 0.25, facecolor=color, edgecolor='black', linewidth=1)
+            y = legend_y - 0.28 - i * 0.26
+            rect = patches.Rectangle((legend_x, y), 0.18, 0.18, facecolor=color, edgecolor='black', linewidth=0.8)
             ax_main.add_patch(rect)
-            ax_main.text(legend_x + 0.35, y + 0.12, label, fontsize=7, va='center')
+            ax_main.text(legend_x + 0.25, y + 0.09, label, fontsize=5.5, va='center')
         
-        # 添加说明
-        ax_main.text(legend_x, legend_y - 1.7, "注: U/L/F/R/B/D", fontsize=6, style='italic')
-        ax_main.text(legend_x, legend_y - 2.0, "为面中心（固定）", fontsize=6, style='italic')
+        # 朝向符号说明
+        ax_main.text(legend_x, legend_y - 2.45, "符号:", fontsize=6, fontweight='bold')
+        ax_main.text(legend_x, legend_y - 2.68, "↻顺时针 ↺逆时针 ⟲翻转", fontsize=5)
+        ax_main.text(legend_x, legend_y - 2.88, "U/L/F/R/B/D=面中心", fontsize=5, style='italic')
         
         # 统计信息（右上角）
         corner_moved = sum(1 for i in range(8) if state.corners[i] != i)
