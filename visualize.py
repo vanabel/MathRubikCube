@@ -650,7 +650,10 @@ def interactive_cube_gui():
         # 统计信息（右上角）
         corner_moved = sum(1 for i in range(8) if state.corners[i] != i)
         edge_moved = sum(1 for i in range(12) if state.edges[i] != i)
-        stats_text = f"移动: 角块{corner_moved}/8\n棱块{edge_moved}/12"
+        corner_ori_changed = sum(1 for x in state.corner_ori if x != 0)
+        edge_ori_changed = sum(1 for x in state.edge_ori if x != 0)
+        
+        stats_text = f"位置: 角{corner_moved}/8 棱{edge_moved}/12\n朝向: 角{corner_ori_changed}/8 棱{edge_ori_changed}/12"
         ax_main.text(12.2, 8.8, stats_text, fontsize=9, va='top', ha='right',
                     bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.5))
         
@@ -663,20 +666,26 @@ def interactive_cube_gui():
                         pos_idx = corner_names.index(pos_name)
                         actual_block = state.corners[pos_idx]
                         actual_name = corner_names[actual_block]
-                        info = f"位置: {pos_name} (角块{pos_idx})\n当前块: {actual_name} (角块{actual_block})"
+                        ori = state.corner_ori[pos_idx]
+                        info = f"位置: {pos_name} (角块{pos_idx})\n当前块: {actual_name} (角块{actual_block})\n朝向: {ori}"
                         if actual_block != pos_idx:
                             info += f"\n状态: 已移动"
+                        elif ori != 0:
+                            info += f"\n状态: 朝向改变"
                         else:
-                            info += f"\n状态: 未移动"
+                            info += f"\n状态: 未变化"
                     elif pos_name in edge_names:
                         pos_idx = edge_names.index(pos_name)
                         actual_block = state.edges[pos_idx]
                         actual_name = edge_names[actual_block]
-                        info = f"位置: {pos_name} (棱块{pos_idx})\n当前块: {actual_name} (棱块{actual_block})"
+                        ori = state.edge_ori[pos_idx]
+                        info = f"位置: {pos_name} (棱块{pos_idx})\n当前块: {actual_name} (棱块{actual_block})\n朝向: {ori}"
                         if actual_block != pos_idx:
                             info += f"\n状态: 已移动"
+                        elif ori != 0:
+                            info += f"\n状态: 朝向改变"
                         else:
-                            info += f"\n状态: 未移动"
+                            info += f"\n状态: 未变化"
                     else:
                         info = f"{pos_name}"
                 else:
