@@ -40,23 +40,40 @@
 
 ## 🚀 快速开始
 
-### 运行演示程序
+### 方式1：Web应用（最简单！）✨ 新增
 
 ```bash
-# 🎮 交互式GUI（推荐！）✨
+# 安装Streamlit
+pip install streamlit matplotlib
+
+# 启动Web界面
+streamlit run web_app.py
+
+# 浏览器自动打开 http://localhost:8501
+# 在线演示：[链接待添加]
+```
+
+### 方式2：桌面GUI
+
+```bash
+# 🎮 交互式GUI（推荐！）
 python visualize.py -i
 # 在GUI中输入公式，实时查看效果，支持撤销/重置
 
+# 可视化（批处理）
+python visualize.py "[F, [R, U]]"
+```
+
+### 方式3：命令行
+
+```bash
 # 基础演示
 python cube.py
 
 # 高级示例
 python examples.py
 
-# 可视化（批处理）
-python visualize.py "[F, [R, U]]"
-
-# 交互式分析（命令行）
+# 交互式分析
 python interactive.py
 ```
 
