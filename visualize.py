@@ -207,9 +207,9 @@ def visualize_cube_matplotlib(state: CubeState, title: str = "魔方状态"):
         print("❌ 需要安装 matplotlib: pip install matplotlib")
         return
     
-    fig, ax = plt.subplots(figsize=(10, 7))
-    ax.set_xlim(-0.5, 12.5)
-    ax.set_ylim(-0.5, 9.5)
+    fig, ax = plt.subplots(figsize=(12, 7))
+    ax.set_xlim(-2.5, 14.5)  # 扩大范围以容纳图例
+    ax.set_ylim(-0.5, 10.0)  # 稍微增加上边界
     ax.set_aspect('equal')
     ax.axis('off')
     
@@ -383,11 +383,11 @@ def visualize_cube_matplotlib(state: CubeState, title: str = "魔方状态"):
                 )
     
     # 添加标题和图例
-    ax.text(6, 9.2, title, ha='center', fontsize=14, fontweight='bold')
+    ax.text(6, 9.6, title, ha='center', fontsize=14, fontweight='bold')
     
-    # 图例（左上角）
-    legend_x = -0.3
-    legend_y = 8.8
+    # 图例（左侧）- 移到魔方左边不重叠的位置
+    legend_x = -2.2
+    legend_y = 8.5
     ax.text(legend_x, legend_y, "图例:", fontsize=9, fontweight='bold')
     
     legend_items = [
@@ -402,22 +402,24 @@ def visualize_cube_matplotlib(state: CubeState, title: str = "魔方状态"):
     ]
     
     for i, (color, label) in enumerate(legend_items):
-        y = legend_y - 0.3 - i * 0.28
-        rect = patches.Rectangle((legend_x, y), 0.2, 0.2, facecolor=color, edgecolor='black', linewidth=0.8)
+        y = legend_y - 0.35 - i * 0.3
+        rect = patches.Rectangle((legend_x, y), 0.24, 0.24, facecolor=color, edgecolor='black', linewidth=0.8)
         ax.add_patch(rect)
-        ax.text(legend_x + 0.3, y + 0.1, label, fontsize=6, va='center')
+        ax.text(legend_x + 0.32, y + 0.12, label, fontsize=6.5, va='center')
     
     # 朝向符号说明
-    ax.text(legend_x, legend_y - 2.6, "朝向符号:", fontsize=6, fontweight='bold')
-    ax.text(legend_x, legend_y - 2.85, "↻=顺时针 ↺=逆时针 ⟲=翻转", fontsize=5.5)
-    ax.text(legend_x, legend_y - 3.1, "注: U/L/F/R/B/D为面中心", fontsize=5.5, style='italic')
+    ax.text(legend_x, legend_y - 2.8, "朝向符号:", fontsize=7, fontweight='bold')
+    ax.text(legend_x, legend_y - 3.1, "↻=顺时针 ↺=逆时针 ⟲=翻转", fontsize=6)
+    ax.text(legend_x, legend_y - 3.38, "注: U/L/F/R/B/D为面中心", fontsize=5.5, style='italic')
     
-    # 统计信息（右上角）
+    # 统计信息（右侧）- 移到魔方右边不重叠的位置
     corner_moved = sum(1 for i in range(8) if state.corners[i] != i)
     edge_moved = sum(1 for i in range(12) if state.edges[i] != i)
+    corner_ori_changed = sum(1 for x in state.corner_ori if x != 0)
+    edge_ori_changed = sum(1 for x in state.edge_ori if x != 0)
     
-    stats_text = f"移动的角块: {corner_moved}/8\n移动的棱块: {edge_moved}/12"
-    ax.text(12.2, 8.8, stats_text, fontsize=9, va='top', ha='right',
+    stats_text = f"位置: 角{corner_moved}/8 棱{edge_moved}/12\n朝向: 角{corner_ori_changed}/8 棱{edge_ori_changed}/12"
+    ax.text(13.8, 8.5, stats_text, fontsize=9, va='top', ha='left',
             bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.5))
     
     # 添加鼠标悬停交互功能
@@ -502,11 +504,11 @@ def interactive_cube_gui():
     current_formula = ""
     formula_history = []
     
-    # 创建图形
-    fig = plt.figure(figsize=(12, 9))
+    # 创建图形 - 增加宽度以容纳图例和统计信息
+    fig = plt.figure(figsize=(14, 9))
     
-    # 主绘图区域
-    ax_main = plt.axes([0.1, 0.25, 0.8, 0.65])
+    # 主绘图区域 - 调整位置留出更多空间
+    ax_main = plt.axes([0.05, 0.25, 0.9, 0.65])
     
     # 文本输入框
     ax_textbox = plt.axes([0.15, 0.12, 0.5, 0.05])
@@ -528,8 +530,8 @@ def interactive_cube_gui():
     def draw_cube(state, title_text="", annot_obj=None):
         """绘制魔方状态"""
         ax_main.clear()
-        ax_main.set_xlim(-0.5, 12.5)
-        ax_main.set_ylim(-0.5, 9.5)
+        ax_main.set_xlim(-2.5, 14.5)  # 扩大范围以容纳图例
+        ax_main.set_ylim(-0.5, 10.0)   # 稍微增加上边界
         ax_main.set_aspect('equal')
         ax_main.axis('off')
         
@@ -662,11 +664,11 @@ def interactive_cube_gui():
             fontsize = 12
         else:
             fontsize = 13
-        ax_main.text(6, 9.2, title_text or "交互式魔方", ha='center', fontsize=fontsize, fontweight='bold')
+        ax_main.text(6, 9.6, title_text or "交互式魔方", ha='center', fontsize=fontsize, fontweight='bold')
         
-        # 图例（左上角）- 包含朝向说明
-        legend_x = -0.3
-        legend_y = 8.8
+        # 图例（左侧）- 包含朝向说明，移到魔方左边不重叠的位置
+        legend_x = -2.2
+        legend_y = 8.5
         ax_main.text(legend_x, legend_y, "图例:", fontsize=8, fontweight='bold')
         
         legend_items = [
@@ -681,24 +683,24 @@ def interactive_cube_gui():
         ]
         
         for i, (color, label) in enumerate(legend_items):
-            y = legend_y - 0.28 - i * 0.26
-            rect = patches.Rectangle((legend_x, y), 0.18, 0.18, facecolor=color, edgecolor='black', linewidth=0.8)
+            y = legend_y - 0.3 - i * 0.28
+            rect = patches.Rectangle((legend_x, y), 0.22, 0.22, facecolor=color, edgecolor='black', linewidth=0.8)
             ax_main.add_patch(rect)
-            ax_main.text(legend_x + 0.25, y + 0.09, label, fontsize=5.5, va='center')
+            ax_main.text(legend_x + 0.3, y + 0.11, label, fontsize=6.5, va='center')
         
         # 朝向符号说明
-        ax_main.text(legend_x, legend_y - 2.45, "符号:", fontsize=6, fontweight='bold')
-        ax_main.text(legend_x, legend_y - 2.68, "↻顺时针 ↺逆时针 ⟲翻转", fontsize=5)
-        ax_main.text(legend_x, legend_y - 2.88, "U/L/F/R/B/D=面中心", fontsize=5, style='italic')
+        ax_main.text(legend_x, legend_y - 2.6, "符号:", fontsize=7, fontweight='bold')
+        ax_main.text(legend_x, legend_y - 2.88, "↻顺时针 ↺逆时针 ⟲翻转", fontsize=6)
+        ax_main.text(legend_x, legend_y - 3.12, "U/L/F/R/B/D=面中心", fontsize=5.5, style='italic')
         
-        # 统计信息（右上角）
+        # 统计信息（右侧）- 移到魔方右边不重叠的位置
         corner_moved = sum(1 for i in range(8) if state.corners[i] != i)
         edge_moved = sum(1 for i in range(12) if state.edges[i] != i)
         corner_ori_changed = sum(1 for x in state.corner_ori if x != 0)
         edge_ori_changed = sum(1 for x in state.edge_ori if x != 0)
         
         stats_text = f"位置: 角{corner_moved}/8 棱{edge_moved}/12\n朝向: 角{corner_ori_changed}/8 棱{edge_ori_changed}/12"
-        ax_main.text(12.2, 8.8, stats_text, fontsize=9, va='top', ha='right',
+        ax_main.text(13.8, 8.5, stats_text, fontsize=9, va='top', ha='left',
                     bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.5))
         
         # 鼠标悬停功能 - 存储块信息
