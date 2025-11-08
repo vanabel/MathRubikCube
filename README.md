@@ -210,6 +210,32 @@ analyze_algorithm("R U R' U R U2 R'")
 | 阶段5 | 可视化 | 🚧 规划中 |
 | 阶段6 | 群论分析 | 🚧 规划中 |
 
+## 📚 完整文档
+
+本项目包含详细的文档系统，所有文档位于 `docs/` 目录：
+
+### 🚀 入门文档
+- **[快速开始](docs/QUICKSTART.md)** - 5分钟快速入门
+- **[文档索引](docs/DOCS_INDEX.md)** - 完整文档导航
+
+### 📐 核心参考
+- **[编码参考](docs/ENCODING_REFERENCE.md)** ⭐ - 位置和朝向编码系统完整定义
+- **[位置vs朝向](docs/POSITION_VS_ORIENTATION.md)** - 核心概念解释
+- **[操作参考](docs/MOVES_REFERENCE.md)** - 18种操作快速参考
+
+### 🎨 使用指南
+- **[可视化指南](docs/VISUALIZATION_GUIDE.md)** - 完整可视化功能说明
+- **[GUI指南](docs/INTERACTIVE_GUI_GUIDE.md)** - 交互式GUI使用方法
+
+### 🔧 技术文档
+- **[安装matplotlib](docs/INSTALL_MATPLOTLIB.md)** - 可视化依赖安装
+- **[字体修复](docs/FONT_FIX.md)** - 中文显示问题解决
+
+### 📊 项目信息
+- **[项目总结](docs/PROJECT_SUMMARY.md)** - 完整功能总结
+
+💡 **推荐阅读顺序**：README → [编码参考](docs/ENCODING_REFERENCE.md) → [快速开始](docs/QUICKSTART.md) → [GUI指南](docs/INTERACTIVE_GUI_GUIDE.md)
+
 ## 📖 参考资料
 
 - [Rubik's Cube Group Theory](https://www.gap-system.org/Doc/Examples/rubik.html)
