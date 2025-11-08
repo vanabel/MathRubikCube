@@ -200,17 +200,53 @@ U_CORNERS = [3, 0, 1, 2, 4, 5, 6, 7]
 # 即循环：(0 3 2 1)
 U_EDGES = [3, 0, 1, 2, 4, 5, 6, 7, 8, 9, 10, 11]
 
+# L (Left) - 左面顺时针90度
+# 影响的角块：UFL(1) -> UBL(2) -> DBL(6) -> DFL(5) -> UFL(1)
+# 即循环：(1 2 6 5)
+L_CORNERS = [0, 2, 6, 3, 4, 1, 5, 7]
+
+# 影响的棱块：UL(1) -> BL(6) -> DL(9) -> FL(5) -> UL(1)
+# 即循环：(1 6 9 5)
+L_EDGES = [0, 6, 2, 3, 4, 1, 9, 7, 8, 5, 10, 11]
+
+# B (Back) - 后面顺时针90度
+# 影响的角块：UBR(3) -> UBL(2) -> DBL(6) -> DBR(7) -> UBR(3)
+# 即循环：(3 2 6 7)
+B_CORNERS = [0, 1, 6, 2, 4, 5, 7, 3]
+
+# 影响的棱块：UB(2) -> BL(6) -> DB(10) -> BR(7) -> UB(2)
+# 即循环：(2 6 10 7)
+B_EDGES = [0, 1, 6, 3, 4, 5, 10, 2, 8, 9, 7, 11]
+
+# D (Down) - 下面顺时针90度
+# 影响的角块：DFR(4) -> DFL(5) -> DBL(6) -> DBR(7) -> DFR(4)
+# 即循环：(4 5 6 7)
+D_CORNERS = [0, 1, 2, 3, 5, 6, 7, 4]
+
+# 影响的棱块：DF(8) -> DL(9) -> DB(10) -> DR(11) -> DF(8)
+# 即循环：(8 9 10 11)
+D_EDGES = [0, 1, 2, 3, 4, 5, 6, 7, 9, 10, 11, 8]
+
 # 创建操作字典
 MOVES: Dict[str, Move] = {
+    # 基本操作
     "F": Move("F", F_CORNERS, F_EDGES),
     "R": Move("R", R_CORNERS, R_EDGES),
     "U": Move("U", U_CORNERS, U_EDGES),
+    "L": Move("L", L_CORNERS, L_EDGES),
+    "B": Move("B", B_CORNERS, B_EDGES),
+    "D": Move("D", D_CORNERS, D_EDGES),
+    
+    # 逆操作
     "F'": Move("F'", invert_permutation(F_CORNERS), invert_permutation(F_EDGES)),
     "R'": Move("R'", invert_permutation(R_CORNERS), invert_permutation(R_EDGES)),
     "U'": Move("U'", invert_permutation(U_CORNERS), invert_permutation(U_EDGES)),
+    "L'": Move("L'", invert_permutation(L_CORNERS), invert_permutation(L_EDGES)),
+    "B'": Move("B'", invert_permutation(B_CORNERS), invert_permutation(B_EDGES)),
+    "D'": Move("D'", invert_permutation(D_CORNERS), invert_permutation(D_EDGES)),
 }
 
-# 添加F2, R2, U2 (180度旋转)
+# 添加双层旋转 (180度)
 MOVES["F2"] = Move("F2", 
                    compose_permutation(F_CORNERS, F_CORNERS),
                    compose_permutation(F_EDGES, F_EDGES))
@@ -220,6 +256,15 @@ MOVES["R2"] = Move("R2",
 MOVES["U2"] = Move("U2",
                    compose_permutation(U_CORNERS, U_CORNERS),
                    compose_permutation(U_EDGES, U_EDGES))
+MOVES["L2"] = Move("L2",
+                   compose_permutation(L_CORNERS, L_CORNERS),
+                   compose_permutation(L_EDGES, L_EDGES))
+MOVES["B2"] = Move("B2",
+                   compose_permutation(B_CORNERS, B_CORNERS),
+                   compose_permutation(B_EDGES, B_EDGES))
+MOVES["D2"] = Move("D2",
+                   compose_permutation(D_CORNERS, D_CORNERS),
+                   compose_permutation(D_EDGES, D_EDGES))
 
 
 def apply_move(state: CubeState, move: Move) -> CubeState:
@@ -396,15 +441,16 @@ if __name__ == "__main__":
     print("="*60)
     
     # 测试基本操作
-    print("\n1️⃣ 测试基本操作")
+    print("\n1️⃣ 测试所有基本操作")
     print("-"*60)
     
-    for move_name in ["F", "R", "U"]:
+    for move_name in ["F", "R", "U", "L", "B", "D"]:
         move = MOVES[move_name]
         corner_cycles = permutation_cycles(move.corner_perm)
         edge_cycles = permutation_cycles(move.edge_perm)
         
-        print(f"\n操作 {move_name}:")
+        faces = {"F": "前", "R": "右", "U": "上", "L": "左", "B": "后", "D": "下"}
+        print(f"\n操作 {move_name} ({faces[move_name]}面):")
         print(f"  角块循环: {format_cycles(corner_cycles)}")
         print(f"  棱块循环: {format_cycles(edge_cycles)}")
     

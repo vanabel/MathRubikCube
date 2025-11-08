@@ -23,8 +23,10 @@ def print_menu():
     print("  7. help               - 显示帮助信息")
     print("  8. examples           - 显示示例命令")
     print("  9. quit / exit        - 退出程序")
-    print("\n提示：公式支持 F, R, U 及其逆操作（F', R', U'）和双层（F2, R2, U2）")
-    print("     支持交换子语法：[F, R] 或嵌套 [F, [R, U]]")
+    print("\n提示：支持所有6个面的操作 F, R, U, L, B, D")
+    print("     逆操作：F', R', U', L', B', D'")
+    print("     双层：F2, R2, U2, L2, B2, D2")
+    print("     交换子：[F, R] 或嵌套 [F, [R, U]]")
     print("="*70)
 
 
@@ -128,25 +130,31 @@ def cmd_compare(alg1, alg2):
 
 def cmd_moves():
     """显示所有可用操作"""
-    print("\n可用的基本操作：")
+    print("\n可用的所有操作：")
     print("="*60)
     
-    for move_name in ["F", "R", "U", "F'", "R'", "U'", "F2", "R2", "U2"]:
+    faces = {"F": "前面", "R": "右面", "U": "上面", "L": "左面", "B": "后面", "D": "下面"}
+    
+    # 基本操作
+    print("\n【基本操作】")
+    for move_name in ["F", "R", "U", "L", "B", "D"]:
         move = MOVES[move_name]
         corner_cycles = permutation_cycles(move.corner_perm)
         edge_cycles = permutation_cycles(move.edge_perm)
         
-        print(f"\n{move_name:4s} - ", end="")
-        if "'" in move_name:
-            print(f"{move_name[0]} 的逆操作")
-        elif "2" in move_name:
-            print(f"{move_name[0]} 的双层旋转（180度）")
-        else:
-            faces = {"F": "前面", "R": "右面", "U": "上面"}
-            print(f"{faces.get(move_name, '')}顺时针90度")
-        
-        print(f"       角块: {format_cycles(corner_cycles)}")
-        print(f"       棱块: {format_cycles(edge_cycles)}")
+        print(f"\n{move_name:2s} - {faces[move_name]}顺时针90度")
+        print(f"     角块: {format_cycles(corner_cycles)}")
+        print(f"     棱块: {format_cycles(edge_cycles)}")
+    
+    # 逆操作
+    print("\n【逆操作】")
+    for move_name in ["F'", "R'", "U'", "L'", "B'", "D'"]:
+        print(f"{move_name:3s} - {move_name[0]} 的逆操作（逆时针90度）")
+    
+    # 双层
+    print("\n【双层旋转】")
+    for move_name in ["F2", "R2", "U2", "L2", "B2", "D2"]:
+        print(f"{move_name:3s} - {move_name[0]} 的180度旋转")
 
 
 def cmd_examples():
