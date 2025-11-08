@@ -44,10 +44,13 @@ def visualize_cube_text(state: CubeState, show_legend: bool = True):
     for i in range(8):
         pos_name = ["UFR", "UFL", "UBL", "UBR", "DFR", "DFL", "DBL", "DBR"][i]
         block_name = ["UFR", "UFL", "UBL", "UBR", "DFR", "DFL", "DBL", "DBR"][state.corners[i]]
-        if state.corners[i] != i:
-            print(f"  位置 {i:1d}({pos_name}): 角块{state.corners[i]}({block_name}) ← 移动了")
+        ori = state.corner_ori[i]
+        ori_str = f" 朝向:{ori}" if ori != 0 else ""
+        
+        if state.corners[i] != i or ori != 0:
+            print(f"  位置 {i:1d}({pos_name}): 角块{state.corners[i]}({block_name}){ori_str} ← 变化了")
         else:
-            print(f"  位置 {i:1d}({pos_name}): 角块{state.corners[i]}({block_name})")
+            print(f"  位置 {i:1d}({pos_name}): 角块{state.corners[i]}({block_name}){ori_str}")
     
     # 显示棱块状态
     print("\n【棱块状态】")
@@ -71,21 +74,32 @@ def visualize_cube_text(state: CubeState, show_legend: bool = True):
     for i in range(12):
         pos_name = edge_names[i]
         block_name = edge_names[state.edges[i]]
-        if state.edges[i] != i:
-            print(f"  位置{i:2d}({pos_name}): 棱块{state.edges[i]:2d}({block_name}) ← 移动了")
+        ori = state.edge_ori[i]
+        ori_str = f" 朝向:{ori}" if ori != 0 else ""
+        
+        if state.edges[i] != i or ori != 0:
+            print(f"  位置{i:2d}({pos_name}): 棱块{state.edges[i]:2d}({block_name}){ori_str} ← 变化了")
         else:
-            print(f"  位置{i:2d}({pos_name}): 棱块{state.edges[i]:2d}({block_name})")
+            print(f"  位置{i:2d}({pos_name}): 棱块{state.edges[i]:2d}({block_name}){ori_str}")
     
     # 统计
     corner_moved = sum(1 for i in range(8) if state.corners[i] != i)
     edge_moved = sum(1 for i in range(12) if state.edges[i] != i)
+    corner_ori_changed = sum(1 for x in state.corner_ori if x != 0)
+    edge_ori_changed = sum(1 for x in state.edge_ori if x != 0)
     
     print("\n【统计】")
     print(f"  移动的角块: {corner_moved}/8")
     print(f"  移动的棱块: {edge_moved}/12")
+    print(f"  朝向改变的角块: {corner_ori_changed}/8")
+    print(f"  朝向改变的棱块: {edge_ori_changed}/12")
+    
+    # 验证朝向合法性
+    is_valid, msg = check_orientation_valid(state)
+    print(f"  朝向验证: {msg}")
     
     if state.is_solved():
-        print(f"\n  ✅ 魔方已还原！")
+        print(f"\n  ✅ 魔方完全还原（位置+朝向）！")
     
     print("="*60 + "\n")
 
@@ -294,9 +308,9 @@ def visualize_cube_matplotlib(state: CubeState, title: str = "魔方状态"):
     
     all_positions = [
         ("U", u_positions, "yellow"),
-        ("L", l_positions, "orange"),
+        ("L", l_positions, "red"),
         ("F", f_positions, "green"),
-        ("R", r_positions, "red"),
+        ("R", r_positions, "orange"),
         ("B", b_positions, "blue"),
         ("D", d_positions, "white"),
     ]
@@ -548,9 +562,9 @@ def interactive_cube_gui():
         
         all_positions = [
             ("U", u_positions, "yellow"),
-            ("L", l_positions, "orange"),
+            ("L", l_positions, "red"),
             ("F", f_positions, "green"),
-            ("R", r_positions, "red"),
+            ("R", r_positions, "orange"),
             ("B", b_positions, "blue"),
             ("D", d_positions, "white"),
         ]
