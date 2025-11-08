@@ -50,8 +50,11 @@ pip install streamlit matplotlib
 streamlit run web_app.py
 
 # 浏览器自动打开 http://localhost:8501
-# 在线演示：[链接待添加]
 ```
+
+**GitHub仓库**: https://github.com/vanabel/MathRubikCube
+
+**部署指南**: 见 [DEPLOY_STREAMLIT.md](DEPLOY_STREAMLIT.md)
 
 ### 方式2：桌面GUI
 

@@ -16,24 +16,25 @@
 
 **步骤**：
 
-1. **推送到GitHub**
-   ```bash
-   git add .
-   git commit -m "Add web app"
-   git push origin main
+1. **代码已在GitHub** ✅
+   ```
+   https://github.com/vanabel/MathRubikCube
    ```
 
-2. **在Streamlit Cloud部署**
+2. **部署到Streamlit Cloud**
    - 访问 https://streamlit.io/cloud
    - 用GitHub账号登录
    - 点击"New app"
-   - 选择仓库：`yourusername/MathRubikCube`
+   - 选择仓库：`vanabel/MathRubikCube`
+   - 分支：`main`
    - 主文件：`web_app.py`
    - 点击"Deploy"
 
 3. **分享链接**
    - 获得类似 `https://mathrubik.streamlit.app` 的链接
    - 分享给任何人！
+   
+   详细步骤见：[DEPLOY_STREAMLIT.md](DEPLOY_STREAMLIT.md)
 
 ---
 
@@ -175,19 +176,22 @@ pip install rubik-cube-math
 
 **最快方式（5分钟）**：
 
-1. 推送到GitHub
-   ```bash
-   git remote add origin https://github.com/yourusername/MathRubikCube.git
-   git push -u origin main
+1. ✅ 已推送到GitHub
+   ```
+   https://github.com/vanabel/MathRubikCube
    ```
 
 2. 部署到Streamlit Cloud
-   - https://streamlit.io/cloud
-   - New app → 选择仓库
+   - 访问 https://streamlit.io/cloud
+   - 用GitHub登录
+   - New app → 选择 vanabel/MathRubikCube
+   - 主文件：web_app.py
    - Deploy
 
 3. 分享链接给朋友！
-   - `https://yourapp.streamlit.app`
+   - 获得 `https://你的应用名.streamlit.app`
+   
+详细步骤：[DEPLOY_STREAMLIT.md](DEPLOY_STREAMLIT.md)
 
 ---
 
