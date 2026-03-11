@@ -806,7 +806,7 @@ def interactive_cube_gui():
         fig.canvas.draw_idle()
     
     def apply_formula(formula):
-        """应用公式"""
+        """应用公式。允许连续多次应用同一公式（例如点两次「顶层十字」观察效果）。"""
         nonlocal current_state, current_formula
         try:
             if formula.strip():
@@ -875,11 +875,13 @@ def interactive_cube_gui():
             print("\n⚠️  没有可撤销的操作")
     
     def on_common(idx):
-        """常用公式按钮：填入并应用对应公式"""
+        """常用公式按钮：填入并应用对应公式
+        
+        注意: TextBox.set_val 会触发 on_submit 回调, 其中会调用 apply_formula,
+        所以这里只需要 set_val 一次, 不要再显式调用 apply_formula, 否则会执行两遍。
+        """
         _, formula = COMMON_FORMULAS[idx]
         textbox.set_val(formula)
-        apply_formula(formula)
-        textbox.set_val("")
     
     # 存储当前的block_info（使用可变对象来保证引用更新）
     current_block_info = {'data': {}}

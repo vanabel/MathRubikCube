@@ -95,7 +95,10 @@ with st.sidebar:
         col = cols[idx % 2]
         with col:
             if st.button(name, key=f"ex_{name}", use_container_width=True):
+                # 点击示例按钮：从还原状态开始，只执行这一条公式
+                st.session_state.history = [formula]
                 st.session_state.formula = formula
+                st.rerun()
     
     with st.expander("📚 资源", expanded=False):
         st.markdown("[编码参考](docs/ENCODING_REFERENCE.md) | [文档](docs/)")
@@ -128,7 +131,9 @@ with input_col2:
 
 # 处理按钮
 if apply_btn and formula.strip():
-    st.session_state.history.append(formula)
+    # 避免重复记录同一公式（例如刚点过示例按钮，又点▶️）
+    if not st.session_state.history or st.session_state.history[-1] != formula:
+        st.session_state.history.append(formula)
     st.session_state.formula = formula
 
 if reset_btn:

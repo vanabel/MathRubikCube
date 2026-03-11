@@ -243,7 +243,7 @@ analyze_algorithm("R U R' U R U2 R'")
 | 阶段3 | 循环分解 | ✅ 完成 |
 | 阶段4 | 添加朝向 | ✅ 完成 |
 | 阶段5 | 可视化 | ✅ 完成 |
-| 阶段6 | 群论分析 | 🚧 规划中 |
+| 阶段6 | 群论分析（奇偶性、阶、三循环枚举、换向子与共轭类统计） | ✅ 完成 |
 
 ## 📚 完整文档
 
@@ -259,6 +259,7 @@ analyze_algorithm("R U R' U R U2 R'")
 - **[操作参考](docs/MOVES_REFERENCE.md)** - 18种操作快速参考
 
 ### 🎨 使用指南
+- **[cube 使用文档](docs/USAGE_REFERENCE.md)** - 严格 API、群论与位置过滤示例
 - **[可视化指南](docs/VISUALIZATION_GUIDE.md)** - 完整可视化功能说明
 - **[GUI指南](docs/INTERACTIVE_GUI_GUIDE.md)** - 交互式GUI使用方法
 
