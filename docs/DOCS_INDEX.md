@@ -62,7 +62,7 @@
 
 ---
 
-## 🔧 安装和配置
+## 🔧 安装和配置 / 部署
 
 ### 环境设置
 
@@ -77,22 +77,29 @@
    - 字体配置方法
    - 不同系统的解决方案
 
+10. **[DEPLOY_STREAMLIT.md](DEPLOY_STREAMLIT.md)** - 部署到Streamlit Cloud
+    - 基于 GitHub 的一键部署
+    - 常见问题与性能建议
+
+11. **[DISTRIBUTION.md](DISTRIBUTION.md)** - 如何分享这个项目
+    - Web / 本地 / Colab / Docker / PyPI 多种分发方式
+
 ---
 
 ## 📊 项目信息
 
 ### 概览
 
-10. **[PROJECT_SUMMARY.md](PROJECT_SUMMARY.md)** - 项目总结
+12. **[PROJECT_SUMMARY.md](PROJECT_SUMMARY.md)** - 项目总结
     - 完整功能列表
     - 技术亮点
     - 开发路线图
     - 成就总结
 
-11. **[../LICENSE](../LICENSE)** - MIT许可证
+13. **[../LICENSE](../LICENSE)** - MIT许可证
     - 开源许可
 
-12. **[../requirements.txt](../requirements.txt)** - 依赖列表
+14. **[../requirements.txt](../requirements.txt)** - 依赖列表
     - Python包依赖
 
 ---
@@ -108,6 +115,7 @@
 **快速上手**
 - → [../README.md](../README.md)（总览）
 - → [QUICKSTART.md](QUICKSTART.md)（5分钟入门）
+ - → [DEPLOY_STREAMLIT.md](DEPLOY_STREAMLIT.md)（部署到Streamlit Cloud）
 
 **操作参考**
 - → [MOVES_REFERENCE.md](MOVES_REFERENCE.md)（18种操作）
@@ -124,6 +132,10 @@
 **安装问题**
 - → [INSTALL_MATPLOTLIB.md](INSTALL_MATPLOTLIB.md)（安装matplotlib）
 - → [FONT_FIX.md](FONT_FIX.md)（字体问题）
+
+**如何分享 / 部署给别人用**
+- → [DISTRIBUTION.md](DISTRIBUTION.md)（整体分发方式）
+- → [DEPLOY_STREAMLIT.md](DEPLOY_STREAMLIT.md)（在线部署细节）
 
 **验证公式**
 - → [ENCODING_REFERENCE.md](ENCODING_REFERENCE.md)第八节（常见公式）

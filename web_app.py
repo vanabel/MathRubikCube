@@ -77,6 +77,11 @@ with st.sidebar:
     st.markdown("### 💡 示例")
     
     example_formulas = {
+        "顶层十字": "F [R,U] F'",
+        "做鱼 (L版)": "L U L' U L U2 L'",
+        "做鱼 (R版)": "R' U' R U' R' U2 R",
+        "角块互换": "R U2 R' U' R U2 L' U R' U' L",
+        "棱块三大换": "F2 U L R' F2 R L' U F2",
         "Sexy Move": "R U R' U'",
         "OLL 45": "F R U R' U' F'",
         "Sune": "R U R' U R U2 R'",

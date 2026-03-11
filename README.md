@@ -54,7 +54,7 @@ streamlit run web_app.py
 
 **GitHub仓库**: https://github.com/vanabel/MathRubikCube
 
-**部署指南**: 见 [DEPLOY_STREAMLIT.md](DEPLOY_STREAMLIT.md)
+**部署指南**: 见 [部署到Streamlit Cloud](docs/DEPLOY_STREAMLIT.md)
 
 ### 方式2：桌面GUI
 
@@ -241,8 +241,8 @@ analyze_algorithm("R U R' U R U2 R'")
 | 阶段1 | 基本置换结构 | ✅ 完成 |
 | 阶段2 | 公式执行与交换子 | ✅ 完成 |
 | 阶段3 | 循环分解 | ✅ 完成 |
-| 阶段4 | 添加朝向 | 🚧 规划中 |
-| 阶段5 | 可视化 | 🚧 规划中 |
+| 阶段4 | 添加朝向 | ✅ 完成 |
+| 阶段5 | 可视化 | ✅ 完成 |
 | 阶段6 | 群论分析 | 🚧 规划中 |
 
 ## 📚 完整文档
@@ -268,6 +268,7 @@ analyze_algorithm("R U R' U R U2 R'")
 
 ### 📊 项目信息
 - **[项目总结](docs/PROJECT_SUMMARY.md)** - 完整功能总结
+ - **[分享与分发](docs/DISTRIBUTION.md)** - 如何分享项目与部署方式总览
 
 💡 **推荐阅读顺序**：README → [编码参考](docs/ENCODING_REFERENCE.md) → [快速开始](docs/QUICKSTART.md) → [GUI指南](docs/INTERACTIVE_GUI_GUIDE.md)
 

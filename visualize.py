@@ -329,24 +329,50 @@ def visualize_cube_matplotlib(state: CubeState, title: str = "魔方状态"):
                 if pos_name in corner_names:
                     pos_idx = corner_names.index(pos_name)
                     actual_block = state.corners[pos_idx]
+                    ori = state.corner_ori[pos_idx]
                     is_moved = actual_block != pos_idx
                     # 显示位置编号，如果移动了则附加箭头和实际块
                     if is_moved:
                         block_label = f"{pos_idx}→{actual_block}"
                     else:
                         block_label = str(pos_idx)
-                    color = "lightcoral" if is_moved else "lightgreen"
+                    # 添加朝向符号
+                    if ori == 1:
+                        block_label += "↻"   # 顺时针120°
+                    elif ori == 2:
+                        block_label += "↺"   # 逆时针120°
+                    # 颜色：位置 + 朝向（角块用绿/金/橙/红系，易区分）
+                    if is_moved and ori != 0:
+                        color = "#8B0000"     # darkred 角：都变
+                    elif is_moved:
+                        color = "#FF8C00"    # darkorange 角：只位置变
+                    elif ori != 0:
+                        color = "#FFD700"    # gold 角：只朝向变
+                    else:
+                        color = "#228B22"    # forestgreen 角：都没变
                 # 然后检查是否是棱块位置
                 elif pos_name in edge_names:
                     pos_idx = edge_names.index(pos_name)
                     actual_block = state.edges[pos_idx]
+                    ori = state.edge_ori[pos_idx]
                     is_moved = actual_block != pos_idx
                     # 显示位置编号，如果移动了则附加箭头和实际块
                     if is_moved:
                         block_label = f"{pos_idx}→{actual_block}"
                     else:
                         block_label = str(pos_idx)
-                    color = "lightsalmon" if is_moved else "lightblue"
+                    # 添加朝向符号
+                    if ori == 1:
+                        block_label += "⟲"   # 翻转180°
+                    # 颜色：位置 + 朝向（棱块用蓝/青/紫系，与角块区分）
+                    if is_moved and ori != 0:
+                        color = "#483D8B"    # darkslateblue 棱：都变
+                    elif is_moved:
+                        color = "#9370DB"    # mediumpurple 棱：只位置变
+                    elif ori != 0:
+                        color = "#40E0D0"    # turquoise 棱：只朝向变
+                    else:
+                        color = "#1E90FF"    # dodgerblue 棱：都没变
                 else:
                     # 未知位置，显示原始标签
                     color = "lightgray"
@@ -391,14 +417,14 @@ def visualize_cube_matplotlib(state: CubeState, title: str = "魔方状态"):
     ax.text(legend_x, legend_y, "图例:", fontsize=9, fontweight='bold')
     
     legend_items = [
-        ("lightgreen", "角块：位置+朝向都正常"),
-        ("lightyellow", "角块：只有朝向变"),
-        ("lightcoral", "角块：只有位置变"),
-        ("indianred", "角块：位置+朝向都变"),
-        ("lightblue", "棱块：位置+朝向都正常"),
-        ("lightcyan", "棱块：只有朝向变"),
-        ("lightsalmon", "棱块：只有位置变"),
-        ("darksalmon", "棱块：位置+朝向都变"),
+        ("#228B22", "角块：位置+朝向都正常"),
+        ("#FFD700", "角块：只有朝向变"),
+        ("#FF8C00", "角块：只有位置变"),
+        ("#8B0000", "角块：位置+朝向都变"),
+        ("#1E90FF", "棱块：位置+朝向都正常"),
+        ("#40E0D0", "棱块：只有朝向变"),
+        ("#9370DB", "棱块：只有位置变"),
+        ("#483D8B", "棱块：位置+朝向都变"),
     ]
     
     for i, (color, label) in enumerate(legend_items):
@@ -432,20 +458,26 @@ def visualize_cube_matplotlib(state: CubeState, title: str = "魔方状态"):
                     pos_idx = corner_names.index(pos_name)
                     actual_block = state.corners[pos_idx]
                     actual_name = corner_names[actual_block]
-                    info = f"位置: {pos_name} (角块{pos_idx})\n当前块: {actual_name} (角块{actual_block})"
+                    ori = state.corner_ori[pos_idx]
+                    info = f"位置: {pos_name} (角块{pos_idx})\n当前块: {actual_name} (角块{actual_block})\n朝向: {ori}"
                     if actual_block != pos_idx:
                         info += f"\n状态: 已移动"
+                    elif ori != 0:
+                        info += f"\n状态: 朝向改变"
                     else:
-                        info += f"\n状态: 未移动"
+                        info += f"\n状态: 未变化"
                 elif pos_name in edge_names:
                     pos_idx = edge_names.index(pos_name)
                     actual_block = state.edges[pos_idx]
                     actual_name = edge_names[actual_block]
-                    info = f"位置: {pos_name} (棱块{pos_idx})\n当前块: {actual_name} (棱块{actual_block})"
+                    ori = state.edge_ori[pos_idx]
+                    info = f"位置: {pos_name} (棱块{pos_idx})\n当前块: {actual_name} (棱块{actual_block})\n朝向: {ori}"
                     if actual_block != pos_idx:
                         info += f"\n状态: 已移动"
+                    elif ori != 0:
+                        info += f"\n状态: 朝向改变"
                     else:
-                        info += f"\n状态: 未移动"
+                        info += f"\n状态: 未变化"
                 else:
                     info = f"{pos_name}"
             else:
@@ -508,7 +540,26 @@ def interactive_cube_gui():
     fig = plt.figure(figsize=(14, 9))
     
     # 主绘图区域 - 调整位置留出更多空间
-    ax_main = plt.axes([0.05, 0.25, 0.9, 0.65])
+    ax_main = plt.axes([0.05, 0.28, 0.9, 0.62])
+    
+    # 常用公式按钮（顶层十字 / 做鱼 / 角互 / 棱互）
+    COMMON_FORMULAS = [
+        ("顶层十字", "F [R,U] F'"),
+        ("做鱼 (L版)", "L U L' U L U2 L'"),
+        ("做鱼 (R版)", "R' U' R U' R' U2 R"),
+        ("角块互换", "R U2 R' U' R U2 L' U R' U' L"),
+        ("棱块三大换", "F2 U L R' F2 R L' U F2"),
+    ]
+    n_common = len(COMMON_FORMULAS)
+    common_left = 0.08
+    common_width = 0.84
+    btn_w = common_width / n_common * 0.9
+    gap = common_width / n_common * 0.1
+    ax_common = [
+        plt.axes([common_left + i * (btn_w + gap), 0.20, btn_w, 0.04])
+        for i in range(n_common)
+    ]
+    btn_common = [Button(ax_common[i], name) for i, (name, _) in enumerate(COMMON_FORMULAS)]
     
     # 文本输入框
     ax_textbox = plt.axes([0.15, 0.12, 0.5, 0.05])
@@ -601,15 +652,15 @@ def interactive_cube_gui():
                         elif ori == 2:
                             block_label += "↺"  # 逆时针
                         
-                        # 颜色：考虑朝向变化
+                        # 颜色：角块 绿/金/橙/红系
                         if is_moved and ori != 0:
-                            color = "indianred"  # 位置和朝向都变了
+                            color = "#8B0000"   # darkred
                         elif is_moved:
-                            color = "lightcoral"  # 只有位置变了
+                            color = "#FF8C00"   # darkorange
                         elif ori != 0:
-                            color = "lightyellow"  # 只有朝向变了
+                            color = "#FFD700"   # gold
                         else:
-                            color = "lightgreen"  # 都没变
+                            color = "#228B22"   # forestgreen
                     elif pos_name in edge_names:
                         pos_idx = edge_names.index(pos_name)
                         actual_block = state.edges[pos_idx]
@@ -626,15 +677,15 @@ def interactive_cube_gui():
                         if ori == 1:
                             block_label += "⟲"  # 翻转
                         
-                        # 颜色：考虑朝向变化
+                        # 颜色：棱块 蓝/青/紫系
                         if is_moved and ori != 0:
-                            color = "darksalmon"  # 位置和朝向都变了
+                            color = "#483D8B"   # darkslateblue
                         elif is_moved:
-                            color = "lightsalmon"  # 只有位置变了
+                            color = "#9370DB"   # mediumpurple
                         elif ori != 0:
-                            color = "lightcyan"  # 只有朝向变了
+                            color = "#40E0D0"   # turquoise
                         else:
-                            color = "lightblue"  # 都没变
+                            color = "#1E90FF"   # dodgerblue
                     else:
                         color = "lightgray"
                         block_label = label
@@ -672,14 +723,14 @@ def interactive_cube_gui():
         ax_main.text(legend_x, legend_y, "图例:", fontsize=8, fontweight='bold')
         
         legend_items = [
-            ("lightgreen", "角:正常"),
-            ("lightyellow", "角:朝向变"),
-            ("lightcoral", "角:位置变"),
-            ("indianred", "角:都变"),
-            ("lightblue", "棱:正常"),
-            ("lightcyan", "棱:朝向变"),
-            ("lightsalmon", "棱:位置变"),
-            ("darksalmon", "棱:都变"),
+            ("#228B22", "角:正常"),
+            ("#FFD700", "角:朝向变"),
+            ("#FF8C00", "角:位置变"),
+            ("#8B0000", "角:都变"),
+            ("#1E90FF", "棱:正常"),
+            ("#40E0D0", "棱:朝向变"),
+            ("#9370DB", "棱:位置变"),
+            ("#483D8B", "棱:都变"),
         ]
         
         for i, (color, label) in enumerate(legend_items):
@@ -823,6 +874,13 @@ def interactive_cube_gui():
         else:
             print("\n⚠️  没有可撤销的操作")
     
+    def on_common(idx):
+        """常用公式按钮：填入并应用对应公式"""
+        _, formula = COMMON_FORMULAS[idx]
+        textbox.set_val(formula)
+        apply_formula(formula)
+        textbox.set_val("")
+    
     # 存储当前的block_info（使用可变对象来保证引用更新）
     current_block_info = {'data': {}}
     
@@ -864,6 +922,8 @@ def interactive_cube_gui():
     btn_apply.on_clicked(on_apply)
     btn_reset.on_clicked(on_reset)
     btn_undo.on_clicked(on_undo)
+    for i in range(len(COMMON_FORMULAS)):
+        btn_common[i].on_clicked(lambda event, idx=i: on_common(idx))
     fig.canvas.mpl_connect('motion_notify_event', on_hover)
     
     # 初始绘制
