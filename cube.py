@@ -10,7 +10,7 @@ Rubik's Cube Permutation Group Model
 5. 循环分解输出
 """
 
-from typing import List, Tuple, Dict
+from typing import List, Tuple, Dict, Optional
 import re
 
 
@@ -111,6 +111,37 @@ class Move:
         return f"Move({self.name})"
 
 
+# ========== 角块/棱块位置编号与常用子集（用于位置过滤） ==========
+#
+# 角块索引 0-7（位置名 → 编号）：
+#   0: UFR  1: UFL  2: UBL  3: UBR  4: DFR  5: DFL  6: DBL  7: DBR
+# 棱块索引 0-11：
+#   0: UF  1: UL  2: UB  3: UR  4: FR  5: FL  6: BL  7: BR  8: DF  9: DL  10: DB  11: DR
+#
+# 以下常量可直接用于 is_three_cycle_algorithm / enumerate_commutator_three_cycles 的
+# allowed_corners / allowed_edges 参数。
+
+# 角块：按层/面
+CORNER_TOP: List[int] = [0, 1, 2, 3]      # 顶层四角 UFR,UFL,UBL,UBR
+CORNER_BOTTOM: List[int] = [4, 5, 6, 7]   # 底层四角 DFR,DFL,DBL,DBR
+CORNER_FRONT: List[int] = [0, 1, 4, 5]    # 前层四角
+CORNER_BACK: List[int] = [2, 3, 6, 7]      # 后层四角
+CORNER_RIGHT: List[int] = [0, 3, 4, 7]     # 右层四角
+CORNER_LEFT: List[int] = [1, 2, 5, 6]      # 左层四角
+
+# 棱块：按层/面
+EDGE_TOP: List[int] = [0, 1, 2, 3]       # 顶层四棱 UF,UL,UB,UR
+EDGE_BOTTOM: List[int] = [8, 9, 10, 11]  # 底层四棱 DF,DL,DB,DR
+EDGE_FRONT: List[int] = [0, 4, 5, 8]     # 前层四棱
+EDGE_BACK: List[int] = [2, 6, 7, 10]     # 后层四棱
+EDGE_RIGHT: List[int] = [3, 4, 7, 11]    # 右层四棱
+EDGE_LEFT: List[int] = [1, 5, 6, 9]      # 左层四棱
+
+# 所有位置（不过滤时可用 None，或显式传以下列表）
+CORNER_ALL: List[int] = list(range(8))
+EDGE_ALL: List[int] = list(range(12))
+
+
 def apply_permutation(state: List[int], perm: List[int]) -> List[int]:
     """
     应用置换到状态
@@ -191,6 +222,438 @@ def format_cycles(cycles: List[Tuple[int, ...]]) -> str:
     if not cycles:
         return "identity (恒等置换)"
     return " ".join(f"({' '.join(map(str, cycle))})" for cycle in cycles)
+
+
+def permutation_parity(perm: List[int]) -> int:
+    """
+    计算置换的奇偶性
+    
+    返回值:
+        0 表示偶置换, 1 表示奇置换
+    """
+    inv_count = 0
+    n = len(perm)
+    for i in range(n):
+        for j in range(i + 1, n):
+            if perm[i] > perm[j]:
+                inv_count += 1
+    return inv_count % 2
+
+
+def get_algorithm_parity(alg_str: str) -> Tuple[int, int, int]:
+    """
+    计算公式对应置换的奇偶性
+    
+    Returns:
+        (角块奇偶性, 棱块奇偶性, 总奇偶性)
+    """
+    corner_perm, edge_perm = get_algorithm_permutation(alg_str)
+    corner_parity = permutation_parity(corner_perm)
+    edge_parity = permutation_parity(edge_perm)
+    total_parity = (corner_parity + edge_parity) % 2
+    return corner_parity, edge_parity, total_parity
+
+
+def get_algorithm_order(alg_str: str, max_power: int = 1000) -> int:
+    """
+    计算公式在整个魔方群中的阶（最小正整数 n 使得 公式^n = 恒等）
+    
+    注意:
+        - 这里的恒等包括位置和朝向完全恢复
+        - 如果在 max_power 次迭代内没有回到恒等, 返回 -1
+    """
+    moves = parse_algorithm(alg_str)
+    if not moves:
+        return 1
+    
+    state = CubeState()
+    for power in range(1, max_power + 1):
+        for move_name in moves:
+            if move_name in MOVES:
+                state = apply_move(state, MOVES[move_name])
+        if state.is_solved():
+            return power
+    return -1
+
+
+def invert_algorithm(alg_str: str) -> str:
+    """返回公式的逆公式字符串"""
+    moves = parse_algorithm(alg_str)
+    inv_moves = invert_sequence(moves)
+    return " ".join(inv_moves)
+
+
+def compose_algorithms(*alg_strs: str) -> str:
+    """依次复合多个公式, 返回合成后的公式字符串"""
+    parts: List[str] = []
+    for s in alg_strs:
+        if not s:
+            continue
+        parts.extend(parse_algorithm(s))
+    return " ".join(parts)
+
+
+def commutator(alg_a: str, alg_b: str) -> str:
+    """
+    构造交换子 [A, B] = A B A⁻¹ B⁻¹ 的显式公式字符串
+    
+    这在研究换向子子群 [G, G] 时非常有用。
+    """
+    a = " ".join(parse_algorithm(alg_a))
+    b = " ".join(parse_algorithm(alg_b))
+    a_inv = invert_algorithm(a)
+    b_inv = invert_algorithm(b)
+    return " ".join([a, b, a_inv, b_inv])
+
+
+def conjugate(alg_x: str, alg_a: str) -> str:
+    """
+    构造共轭 x A x⁻¹ 的显式公式字符串
+    
+    共轭用于“搬运”某个局部操作到空间中的其他位置。
+    """
+    x = " ".join(parse_algorithm(alg_x))
+    a = " ".join(parse_algorithm(alg_a))
+    x_inv = invert_algorithm(x)
+    return " ".join([x, a, x_inv])
+
+
+def _cycles_respect_allowed_positions(
+    cycles: List[Tuple[int, ...]],
+    allowed: Optional[List[int]],
+) -> bool:
+    """
+    检查所有非平凡循环是否完全落在 allowed 给定的位置集合中
+    
+    如果 allowed 为 None, 认为总是满足。
+    """
+    if allowed is None:
+        return True
+    allowed_set = set(allowed)
+    for cycle in cycles:
+        for v in cycle:
+            if v not in allowed_set:
+                return False
+    return True
+
+
+def algorithm_position_key(alg_str: str) -> Tuple[Tuple[int, ...], Tuple[int, ...]]:
+    """
+    只看位置（忽略朝向）时, 把一个公式对应的群元素编码为键值
+    
+    返回:
+        (角块置换元组, 棱块置换元组)
+    """
+    corner_perm, edge_perm = get_algorithm_permutation(alg_str)
+    return tuple(corner_perm), tuple(edge_perm)
+
+
+def is_three_cycle_algorithm(
+    alg_str: str,
+    part: str = "any",
+    pure: bool = False,
+    allowed_corners: Optional[List[int]] = None,
+    allowed_edges: Optional[List[int]] = None,
+) -> bool:
+    """
+    判定一个公式是否实现了“某类三循环”
+    
+    Args:
+        alg_str: 公式字符串
+        part:    作用部位:
+                 - 'corner': 只看角块
+                 - 'edge'  : 只看棱块
+                 - 'both'  : 角块和棱块都要出现三循环
+                 - 'any'   : 任一出现三循环即可
+        pure:    是否要求是“纯三循环”:
+                 - True : 该部分必须恰好只有一个3-循环且其余全固定
+                 - False: 只要存在长度为3的循环即可（可以伴随其他循环）
+    """
+    corner_perm, edge_perm = get_algorithm_permutation(alg_str)
+    corner_cycles = permutation_cycles(corner_perm)
+    edge_cycles = permutation_cycles(edge_perm)
+
+    # 如果给定了限制位置, 要求所有被移动的位置都在允许集合中
+    if not _cycles_respect_allowed_positions(corner_cycles, allowed_corners):
+        return False
+    if not _cycles_respect_allowed_positions(edge_cycles, allowed_edges):
+        return False
+
+    def has_3(cycles):
+        return any(len(c) == 3 for c in cycles)
+
+    def is_pure_3(cycles):
+        return len(cycles) == 1 and len(cycles[0]) == 3
+
+    if part == "corner":
+        ok = has_3(corner_cycles)
+        pure_ok = is_pure_3(corner_cycles)
+    elif part == "edge":
+        ok = has_3(edge_cycles)
+        pure_ok = is_pure_3(edge_cycles)
+    elif part == "both":
+        ok = has_3(corner_cycles) and has_3(edge_cycles)
+        pure_ok = is_pure_3(corner_cycles) and is_pure_3(edge_cycles)
+    else:  # 'any'
+        ok = has_3(corner_cycles) or has_3(edge_cycles)
+        pure_ok = is_pure_3(corner_cycles) or is_pure_3(edge_cycles)
+
+    return pure_ok if pure else ok
+
+
+def enumerate_commutator_three_cycles(
+    base_moves: List[str] = None,
+    nested: bool = False,
+    part: str = "any",
+    pure: bool = False,
+    allowed_corners: Optional[List[int]] = None,
+    allowed_edges: Optional[List[int]] = None,
+) -> List[Dict[str, object]]:
+    """
+    系统枚举由交换子产生的三循环
+    
+    Args:
+        base_moves: 参与构造的基本操作集合, 默认使用 ["F", "R", "U", "L", "B", "D"]
+        nested    : 是否枚举嵌套交换子 [A, [B, C]]
+        part      : 三循环作用部位, 见 is_three_cycle_algorithm
+        pure      : 是否要求纯三循环
+    
+    Returns:
+        一个字典列表, 每个元素包含:
+        {
+            "alg": 公式字符串,
+            "corner_cycles": 角块循环,
+            "edge_cycles":   棱块循环,
+            "order":         元素阶,
+            "parity":        (角块奇偶, 棱块奇偶, 总奇偶)
+        }
+    """
+    if base_moves is None:
+        base_moves = ["F", "R", "U", "L", "B", "D"]
+
+    results: Dict[Tuple[Tuple[int, ...], Tuple[int, ...]], Dict[str, object]] = {}
+
+    # 简单交换子 [A, B]
+    for i, a in enumerate(base_moves):
+        for b in base_moves[i + 1 :]:
+            alg = f"[{a}, {b}]"
+            if not is_three_cycle_algorithm(
+                alg,
+                part=part,
+                pure=pure,
+                allowed_corners=allowed_corners,
+                allowed_edges=allowed_edges,
+            ):
+                continue
+            key = algorithm_position_key(alg)
+            if key in results:
+                continue
+            corner_perm, edge_perm = get_algorithm_permutation(alg)
+            corner_cycles = permutation_cycles(corner_perm)
+            edge_cycles = permutation_cycles(edge_perm)
+            order = get_algorithm_order(alg, max_power=200)
+            parity = get_algorithm_parity(alg)
+            results[key] = {
+                "alg": alg,
+                "corner_cycles": corner_cycles,
+                "edge_cycles": edge_cycles,
+                "order": order,
+                "parity": parity,
+            }
+
+    # 嵌套交换子 [A, [B, C]]
+    if nested:
+        n = len(base_moves)
+        for i in range(n):
+            for j in range(n):
+                for k in range(n):
+                    a = base_moves[i]
+                    b = base_moves[j]
+                    c = base_moves[k]
+                    inner = f"[{b}, {c}]"
+                    alg = f"[{a}, {inner}]"
+                    if not is_three_cycle_algorithm(
+                        alg,
+                        part=part,
+                        pure=pure,
+                        allowed_corners=allowed_corners,
+                        allowed_edges=allowed_edges,
+                    ):
+                        continue
+                    key = algorithm_position_key(alg)
+                    if key in results:
+                        continue
+                    corner_perm, edge_perm = get_algorithm_permutation(alg)
+                    corner_cycles = permutation_cycles(corner_perm)
+                    edge_cycles = permutation_cycles(edge_perm)
+                    order = get_algorithm_order(alg, max_power=500)
+                    parity = get_algorithm_parity(alg)
+                    results[key] = {
+                        "alg": alg,
+                        "corner_cycles": corner_cycles,
+                        "edge_cycles": edge_cycles,
+                        "order": order,
+                        "parity": parity,
+                    }
+
+    return list(results.values())
+
+
+def sample_commutators(
+    generators: List[str] = None,
+    max_word_length: int = 2,
+) -> List[str]:
+    """
+    在有限深度内, 采样由生成元构成的交换子集合
+    
+    步骤:
+        1. 用 generators 及其逆元生成长度 ≤ max_word_length 的所有单词
+        2. 对所有 (w1, w2) 计算交换子 [w1, w2]
+        3. 仅按“位置置换”去重, 返回代表性公式列表
+    """
+    if generators is None:
+        generators = ["F", "R", "U", "L", "B", "D"]
+
+    # 字母表: 生成元及其逆
+    alphabet: List[str] = []
+    for g in generators:
+        if g not in alphabet:
+            alphabet.append(g)
+        g_inv = invert_algorithm(g)
+        if g_inv not in alphabet:
+            alphabet.append(g_inv)
+
+    # 生成长度 ≤ max_word_length 的所有单词
+    words: List[str] = []
+    current = [""]
+    for _ in range(max_word_length):
+        next_level: List[str] = []
+        for w in current:
+            for a in alphabet:
+                new = (w + " " + a).strip()
+                if new not in words:
+                    words.append(new)
+                next_level.append(new)
+        current = next_level
+
+    # 计算所有交换子, 并按位置置换去重
+    commutators: Dict[Tuple[Tuple[int, ...], Tuple[int, ...]], str] = {}
+    for w1 in words:
+        for w2 in words:
+            alg = commutator(w1, w2)
+            key = algorithm_position_key(alg)
+            if key not in commutators:
+                commutators[key] = alg
+
+    return list(commutators.values())
+
+
+def classify_conjugacy_classes(
+    algs: List[str],
+    conjugators: List[str] = None,
+) -> List[Dict[str, object]]:
+    """
+    在给定有限集合 algs 中, 按共轭关系划分共轭类并统计
+    
+    Args:
+        algs: 有限个公式字符串, 视为一个有限子集
+        conjugators: 用于共轭的元素集合, 默认使用基本操作 ["F", "R", "U", "L", "B", "D"]
+    
+    Returns:
+        每个共轭类一个字典:
+        {
+            "representative": 代表公式,
+            "size":           在样本集中的类大小,
+            "corner_cycles":  代表元的角块循环,
+            "edge_cycles":    代表元的棱块循环,
+            "order":          代表元阶,
+            "parity": {
+                "corner": 角块奇偶,
+                "edge":   棱块奇偶,
+                "total":  总奇偶,
+            },
+        }
+    """
+    if conjugators is None:
+        conjugators = ["F", "R", "U", "L", "B", "D"]
+
+    # 构造共轭器集合: 包含逆元
+    conj_elems: List[str] = []
+    for g in conjugators:
+        if g not in conj_elems:
+            conj_elems.append(g)
+        g_inv = invert_algorithm(g)
+        if g_inv not in conj_elems:
+            conj_elems.append(g_inv)
+
+    # 把样本元素按“位置置换”编码
+    key_to_alg: Dict[Tuple[Tuple[int, ...], Tuple[int, ...]], str] = {}
+    for alg in algs:
+        key = algorithm_position_key(alg)
+        if key not in key_to_alg:
+            key_to_alg[key] = alg
+
+    unclassified = set(key_to_alg.keys())
+    classes: List[Dict[str, object]] = []
+
+    while unclassified:
+        rep_key = unclassified.pop()
+        rep_alg = key_to_alg[rep_key]
+
+        # BFS 找到该共轭类在样本中的所有元素
+        class_keys = {rep_key}
+        queue = [rep_key]
+
+        while queue:
+            key = queue.pop()
+            alg = key_to_alg[key]
+            for c in conj_elems:
+                conj_alg = conjugate(c, alg)
+                conj_key = algorithm_position_key(conj_alg)
+                if conj_key in unclassified and conj_key not in class_keys:
+                    class_keys.add(conj_key)
+                    unclassified.remove(conj_key)
+                    queue.append(conj_key)
+
+        # 用代表元计算一些群论不变量
+        rep_corner, rep_edge = get_algorithm_permutation(rep_alg)
+        corner_cycles = permutation_cycles(rep_corner)
+        edge_cycles = permutation_cycles(rep_edge)
+        corner_parity, edge_parity, total_parity = get_algorithm_parity(rep_alg)
+        order = get_algorithm_order(rep_alg, max_power=500)
+
+        classes.append(
+            {
+                "representative": rep_alg,
+                "size": len(class_keys),
+                "corner_cycles": corner_cycles,
+                "edge_cycles": edge_cycles,
+                "order": order,
+                "parity": {
+                    "corner": corner_parity,
+                    "edge": edge_parity,
+                    "total": total_parity,
+                },
+            }
+        )
+
+    return classes
+
+
+def commutator_conjugacy_statistics(
+    generators: List[str] = None,
+    max_word_length: int = 1,
+) -> List[Dict[str, object]]:
+    """
+    综合工具: 
+        1. 在给定生成元及深度下采样所有交换子
+        2. 按共轭关系划分共轭类
+        3. 返回每个共轭类的代表元及基本统计信息
+    
+    这对于直观地“观察”换向子子群 [G, G] 在有限采样下的结构很有用。
+    """
+    comms = sample_commutators(generators=generators, max_word_length=max_word_length)
+    return classify_conjugacy_classes(comms, conjugators=generators)
 
 
 # ========== 基本操作定义 ==========
@@ -581,6 +1044,22 @@ def analyze_algorithm(alg_str: str) -> None:
     edge_ori_changed = sum(1 for x in final_state.edge_ori if x != 0)
     if edge_ori_changed > 0:
         print(f"朝向改变的棱块数: {edge_ori_changed}")
+    
+    # 奇偶性分析
+    corner_parity, edge_parity, total_parity = get_algorithm_parity(alg_str)
+    parity_str = lambda p: "偶置换" if p == 0 else "奇置换"
+    print(f"\n【奇偶性分析】")
+    print(f"角块置换: {parity_str(corner_parity)}")
+    print(f"棱块置换: {parity_str(edge_parity)}")
+    print(f"整体置换: {parity_str(total_parity)}")
+    
+    # 群元素的阶
+    order = get_algorithm_order(alg_str, max_power=500)
+    print(f"\n【元素阶】")
+    if order == -1:
+        print(f"在 500 次复合内未回到恒等，阶 > 500（或非常大）")
+    else:
+        print(f"公式的阶 = {order}")
     
     # 检查朝向合法性
     is_valid, msg = check_orientation_valid(final_state)

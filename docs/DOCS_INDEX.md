@@ -42,19 +42,25 @@
    - 12个三循环交换子
    - 常用公式
 
+6. **[USAGE_REFERENCE.md](USAGE_REFERENCE.md)** - cube 模块严格使用文档
+   - 状态、公式、置换、群论 API 与签名
+   - 位置过滤常量与三循环枚举
+   - 换向子与共轭类统计
+   - 带示例的完整用法说明
+
 ---
 
 ## 🎨 使用指南
 
 ### 可视化
 
-6. **[VISUALIZATION_GUIDE.md](VISUALIZATION_GUIDE.md)** - 可视化完整指南
+7. **[VISUALIZATION_GUIDE.md](VISUALIZATION_GUIDE.md)** - 可视化完整指南
    - 三种可视化方式
    - 使用示例
    - API参考
    - 故障排除
 
-7. **[INTERACTIVE_GUI_GUIDE.md](INTERACTIVE_GUI_GUIDE.md)** - 交互式GUI指南
+8. **[INTERACTIVE_GUI_GUIDE.md](INTERACTIVE_GUI_GUIDE.md)** - 交互式GUI指南
    - GUI使用方法
    - 鼠标悬停功能
    - 撤销/重置功能
@@ -66,22 +72,22 @@
 
 ### 环境设置
 
-8. **[INSTALL_MATPLOTLIB.md](INSTALL_MATPLOTLIB.md)** - 安装matplotlib
+9. **[INSTALL_MATPLOTLIB.md](INSTALL_MATPLOTLIB.md)** - 安装matplotlib
    - 安装步骤
    - 不同平台说明
    - 故障排除
    - 虚拟环境配置
 
-9. **[FONT_FIX.md](FONT_FIX.md)** - 中文字体修复
+10. **[FONT_FIX.md](FONT_FIX.md)** - 中文字体修复
    - matplotlib中文显示问题
    - 字体配置方法
    - 不同系统的解决方案
 
-10. **[DEPLOY_STREAMLIT.md](DEPLOY_STREAMLIT.md)** - 部署到Streamlit Cloud
+11. **[DEPLOY_STREAMLIT.md](DEPLOY_STREAMLIT.md)** - 部署到Streamlit Cloud
     - 基于 GitHub 的一键部署
     - 常见问题与性能建议
 
-11. **[DISTRIBUTION.md](DISTRIBUTION.md)** - 如何分享这个项目
+12. **[DISTRIBUTION.md](DISTRIBUTION.md)** - 如何分享这个项目
     - Web / 本地 / Colab / Docker / PyPI 多种分发方式
 
 ---
@@ -90,16 +96,16 @@
 
 ### 概览
 
-12. **[PROJECT_SUMMARY.md](PROJECT_SUMMARY.md)** - 项目总结
+13. **[PROJECT_SUMMARY.md](PROJECT_SUMMARY.md)** - 项目总结
     - 完整功能列表
     - 技术亮点
     - 开发路线图
     - 成就总结
 
-13. **[../LICENSE](../LICENSE)** - MIT许可证
+14. **[../LICENSE](../LICENSE)** - MIT许可证
     - 开源许可
 
-14. **[../requirements.txt](../requirements.txt)** - 依赖列表
+15. **[../requirements.txt](../requirements.txt)** - 依赖列表
     - Python包依赖
 
 ---
@@ -140,6 +146,10 @@
 **验证公式**
 - → [ENCODING_REFERENCE.md](ENCODING_REFERENCE.md)第八节（常见公式）
 - → 运行 `python verify_formula.py "公式"`
+
+**cube API / 群论 / 位置过滤**
+- → [USAGE_REFERENCE.md](USAGE_REFERENCE.md)（严格使用文档与示例）
+- → 运行 `python examples/usage_demo.py` 自检
 
 ---
 
@@ -209,17 +219,18 @@
 5. **[INTERACTIVE_GUI_GUIDE.md](INTERACTIVE_GUI_GUIDE.md)** - GUI使用
 6. **[VISUALIZATION_GUIDE.md](VISUALIZATION_GUIDE.md)** - 可视化指南
 7. **[MOVES_REFERENCE.md](MOVES_REFERENCE.md)** - 操作参考
+8. **[USAGE_REFERENCE.md](USAGE_REFERENCE.md)** - cube 模块严格使用文档（含示例）
 
 ### 技术文档
 
-8. **[INSTALL_MATPLOTLIB.md](INSTALL_MATPLOTLIB.md)** - 安装指南
-9. **[FONT_FIX.md](FONT_FIX.md)** - 字体修复
-10. **[PROJECT_SUMMARY.md](PROJECT_SUMMARY.md)** - 项目总结
+9. **[INSTALL_MATPLOTLIB.md](INSTALL_MATPLOTLIB.md)** - 安装指南
+10. **[FONT_FIX.md](FONT_FIX.md)** - 字体修复
+11. **[PROJECT_SUMMARY.md](PROJECT_SUMMARY.md)** - 项目总结
 
 ### 配置文件
 
-11. **[../requirements.txt](../requirements.txt)** - 依赖列表
-12. **[../LICENSE](../LICENSE)** - 开源许可
+12. **[../requirements.txt](../requirements.txt)** - 依赖列表
+13. **[../LICENSE](../LICENSE)** - 开源许可
 
 ---
 
