@@ -18,7 +18,12 @@
    - 基本使用示例
    - 常用命令
 
-3. **[ENCODING_REFERENCE.md](ENCODING_REFERENCE.md)** ⭐ 核心参考
+3. **[TOP_LAYER_SOLVING_GUIDE.md](TOP_LAYER_SOLVING_GUIDE.md)** - 顶层还原方法
+   - 顶层十字
+   - 小鱼 OLL
+   - PLL 收尾
+
+4. **[ENCODING_REFERENCE.md](ENCODING_REFERENCE.md)** ⭐ 核心参考
    - 块的位置编码（角块0-7，棱块0-11）
    - 朝向编码（角块0-2，棱块0-1）
    - 所有基本操作的详细效果
@@ -30,19 +35,19 @@
 
 ### 数学模型
 
-4. **[POSITION_VS_ORIENTATION.md](POSITION_VS_ORIENTATION.md)** - 位置vs朝向
+5. **[POSITION_VS_ORIENTATION.md](POSITION_VS_ORIENTATION.md)** - 位置vs朝向
    - 两个独立维度的解释
    - OLL vs PLL的区别
    - 为什么F操作会影响下层
    - 常见误解澄清
 
-5. **[MOVES_REFERENCE.md](MOVES_REFERENCE.md)** - 操作快速参考
+6. **[MOVES_REFERENCE.md](MOVES_REFERENCE.md)** - 操作快速参考
    - 18种操作列表
    - 循环分解
    - 12个三循环交换子
    - 常用公式
 
-6. **[USAGE_REFERENCE.md](USAGE_REFERENCE.md)** - cube 模块严格使用文档
+7. **[USAGE_REFERENCE.md](USAGE_REFERENCE.md)** - cube 模块严格使用文档
    - 状态、公式、置换、群论 API 与签名
    - 位置过滤常量与三循环枚举
    - 换向子与共轭类统计
@@ -54,13 +59,13 @@
 
 ### 可视化
 
-7. **[VISUALIZATION_GUIDE.md](VISUALIZATION_GUIDE.md)** - 可视化完整指南
+8. **[VISUALIZATION_GUIDE.md](VISUALIZATION_GUIDE.md)** - 可视化完整指南
    - 三种可视化方式
    - 使用示例
    - API参考
    - 故障排除
 
-8. **[INTERACTIVE_GUI_GUIDE.md](INTERACTIVE_GUI_GUIDE.md)** - 交互式GUI指南
+9. **[INTERACTIVE_GUI_GUIDE.md](INTERACTIVE_GUI_GUIDE.md)** - 交互式GUI指南
    - GUI使用方法
    - 鼠标悬停功能
    - 撤销/重置功能
@@ -72,22 +77,22 @@
 
 ### 环境设置
 
-9. **[INSTALL_MATPLOTLIB.md](INSTALL_MATPLOTLIB.md)** - 安装matplotlib
+10. **[INSTALL_MATPLOTLIB.md](INSTALL_MATPLOTLIB.md)** - 安装matplotlib
    - 安装步骤
    - 不同平台说明
    - 故障排除
    - 虚拟环境配置
 
-10. **[FONT_FIX.md](FONT_FIX.md)** - 中文字体修复
+11. **[FONT_FIX.md](FONT_FIX.md)** - 中文字体修复
    - matplotlib中文显示问题
    - 字体配置方法
    - 不同系统的解决方案
 
-11. **[DEPLOY_STREAMLIT.md](DEPLOY_STREAMLIT.md)** - 部署到Streamlit Cloud
+12. **[DEPLOY_STREAMLIT.md](DEPLOY_STREAMLIT.md)** - 部署到Streamlit Cloud
     - 基于 GitHub 的一键部署
     - 常见问题与性能建议
 
-12. **[DISTRIBUTION.md](DISTRIBUTION.md)** - 如何分享这个项目
+13. **[DISTRIBUTION.md](DISTRIBUTION.md)** - 如何分享这个项目
     - Web / 本地 / Colab / Docker / PyPI 多种分发方式
 
 ---
@@ -96,16 +101,16 @@
 
 ### 概览
 
-13. **[PROJECT_SUMMARY.md](PROJECT_SUMMARY.md)** - 项目总结
+14. **[PROJECT_SUMMARY.md](PROJECT_SUMMARY.md)** - 项目总结
     - 完整功能列表
     - 技术亮点
     - 开发路线图
     - 成就总结
 
-14. **[../LICENSE](../LICENSE)** - MIT许可证
+15. **[../LICENSE](../LICENSE)** - MIT许可证
     - 开源许可
 
-15. **[../requirements.txt](../requirements.txt)** - 依赖列表
+16. **[../requirements.txt](../requirements.txt)** - 依赖列表
     - Python包依赖
 
 ---
@@ -121,9 +126,11 @@
 **快速上手**
 - → [../README.md](../README.md)（总览）
 - → [QUICKSTART.md](QUICKSTART.md)（5分钟入门）
- - → [DEPLOY_STREAMLIT.md](DEPLOY_STREAMLIT.md)（部署到Streamlit Cloud）
+- → [TOP_LAYER_SOLVING_GUIDE.md](TOP_LAYER_SOLVING_GUIDE.md)（顶层还原方法）
+- → [DEPLOY_STREAMLIT.md](DEPLOY_STREAMLIT.md)（部署到Streamlit Cloud）
 
 **操作参考**
+- → [TOP_LAYER_SOLVING_GUIDE.md](TOP_LAYER_SOLVING_GUIDE.md)（顶层还原流程）
 - → [MOVES_REFERENCE.md](MOVES_REFERENCE.md)（18种操作）
 - → [ENCODING_REFERENCE.md](ENCODING_REFERENCE.md)第五节（基本操作效果）
 
@@ -158,9 +165,10 @@
 ### 首次使用
 
 1. 阅读 **[../README.md](../README.md)** 了解项目
-2. 阅读 **[ENCODING_REFERENCE.md](ENCODING_REFERENCE.md)** 理解编码（⭐重要）
-3. 按照 **[QUICKSTART.md](QUICKSTART.md)** 运行示例
-4. 阅读 **[INTERACTIVE_GUI_GUIDE.md](INTERACTIVE_GUI_GUIDE.md)** 使用GUI
+2. 阅读 **[TOP_LAYER_SOLVING_GUIDE.md](TOP_LAYER_SOLVING_GUIDE.md)** 了解顶层还原流程
+3. 阅读 **[ENCODING_REFERENCE.md](ENCODING_REFERENCE.md)** 理解编码（⭐重要）
+4. 按照 **[QUICKSTART.md](QUICKSTART.md)** 运行示例
+5. 阅读 **[INTERACTIVE_GUI_GUIDE.md](INTERACTIVE_GUI_GUIDE.md)** 使用GUI
 
 ### 深入学习
 
@@ -182,6 +190,7 @@
 ### 初级（1-2小时）
 
 - [ ] 阅读 [../README.md](../README.md)
+- [ ] 阅读 [TOP_LAYER_SOLVING_GUIDE.md](TOP_LAYER_SOLVING_GUIDE.md)
 - [ ] 阅读 [ENCODING_REFERENCE.md](ENCODING_REFERENCE.md) 第1-2节（位置编码）
 - [ ] 运行 `python cube.py`
 - [ ] 运行 `python visualize.py -i`
@@ -216,21 +225,22 @@
 ### 使用指南
 
 4. **[QUICKSTART.md](QUICKSTART.md)** - 快速入门
-5. **[INTERACTIVE_GUI_GUIDE.md](INTERACTIVE_GUI_GUIDE.md)** - GUI使用
-6. **[VISUALIZATION_GUIDE.md](VISUALIZATION_GUIDE.md)** - 可视化指南
-7. **[MOVES_REFERENCE.md](MOVES_REFERENCE.md)** - 操作参考
-8. **[USAGE_REFERENCE.md](USAGE_REFERENCE.md)** - cube 模块严格使用文档（含示例）
+5. **[TOP_LAYER_SOLVING_GUIDE.md](TOP_LAYER_SOLVING_GUIDE.md)** - 顶层还原方法
+6. **[INTERACTIVE_GUI_GUIDE.md](INTERACTIVE_GUI_GUIDE.md)** - GUI使用
+7. **[VISUALIZATION_GUIDE.md](VISUALIZATION_GUIDE.md)** - 可视化指南
+8. **[MOVES_REFERENCE.md](MOVES_REFERENCE.md)** - 操作参考
+9. **[USAGE_REFERENCE.md](USAGE_REFERENCE.md)** - cube 模块严格使用文档（含示例）
 
 ### 技术文档
 
-9. **[INSTALL_MATPLOTLIB.md](INSTALL_MATPLOTLIB.md)** - 安装指南
-10. **[FONT_FIX.md](FONT_FIX.md)** - 字体修复
-11. **[PROJECT_SUMMARY.md](PROJECT_SUMMARY.md)** - 项目总结
+10. **[INSTALL_MATPLOTLIB.md](INSTALL_MATPLOTLIB.md)** - 安装指南
+11. **[FONT_FIX.md](FONT_FIX.md)** - 字体修复
+12. **[PROJECT_SUMMARY.md](PROJECT_SUMMARY.md)** - 项目总结
 
 ### 配置文件
 
-12. **[../requirements.txt](../requirements.txt)** - 依赖列表
-13. **[../LICENSE](../LICENSE)** - 开源许可
+13. **[../requirements.txt](../requirements.txt)** - 依赖列表
+14. **[../LICENSE](../LICENSE)** - 开源许可
 
 ---
 
@@ -247,15 +257,17 @@
 ```
 1. ../README.md
       ↓
-2. ENCODING_REFERENCE.md (⭐核心)
+2. TOP_LAYER_SOLVING_GUIDE.md
       ↓
-3. QUICKSTART.md
+3. ENCODING_REFERENCE.md (⭐核心)
       ↓
-4. INTERACTIVE_GUI_GUIDE.md
+4. QUICKSTART.md
       ↓
-5. POSITION_VS_ORIENTATION.md
+5. INTERACTIVE_GUI_GUIDE.md
       ↓
-6. 其他文档按需阅读
+6. POSITION_VS_ORIENTATION.md
+      ↓
+7. 其他文档按需阅读
 ```
 
 ---
@@ -263,4 +275,3 @@
 **💡 提示：遇到任何疑问，先查看 [ENCODING_REFERENCE.md](ENCODING_REFERENCE.md)！**
 
 **最后更新：2025-11-08**
-

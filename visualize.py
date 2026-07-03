@@ -8,6 +8,8 @@ Rubik's Cube Visualization Module
 from cube import *
 import sys
 
+EDGE_FLIP_MARK = "*"
+
 
 # ==================== 文本可视化 ====================
 
@@ -186,13 +188,14 @@ def animate_algorithm_text(alg_str: str, delay: float = 0.5):
 
 # ==================== 图形可视化 ====================
 
-def visualize_cube_matplotlib(state: CubeState, title: str = "魔方状态"):
+def visualize_cube_matplotlib(state: CubeState, title: str = "魔方状态", show: bool = True):
     """
     使用 matplotlib 绘制魔方展开图
     
     Args:
         state: 魔方状态
         title: 图表标题
+        show: 是否调用 plt.show()。Web/非交互式渲染时应设为 False。
     """
     try:
         import matplotlib.pyplot as plt
@@ -363,7 +366,7 @@ def visualize_cube_matplotlib(state: CubeState, title: str = "魔方状态"):
                         block_label = str(pos_idx)
                     # 添加朝向符号
                     if ori == 1:
-                        block_label += "⟲"   # 翻转180°
+                        block_label += EDGE_FLIP_MARK   # 翻转180°
                     # 颜色：位置 + 朝向（棱块用蓝/青/紫系，与角块区分）
                     if is_moved and ori != 0:
                         color = "#483D8B"    # darkslateblue 棱：都变
@@ -435,7 +438,7 @@ def visualize_cube_matplotlib(state: CubeState, title: str = "魔方状态"):
     
     # 朝向符号说明
     ax.text(legend_x, legend_y - 2.8, "朝向符号:", fontsize=7, fontweight='bold')
-    ax.text(legend_x, legend_y - 3.1, "↻=顺时针 ↺=逆时针 ⟲=翻转", fontsize=6)
+    ax.text(legend_x, legend_y - 3.1, f"↻=顺时针 ↺=逆时针 {EDGE_FLIP_MARK}=翻转", fontsize=6)
     ax.text(legend_x, legend_y - 3.38, "注: U/L/F/R/B/D为面中心", fontsize=5.5, style='italic')
     
     # 统计信息（右侧）- 移到魔方右边不重叠的位置
@@ -511,7 +514,8 @@ def visualize_cube_matplotlib(state: CubeState, title: str = "魔方状态"):
     fig.canvas.mpl_connect('motion_notify_event', on_hover)
     
     plt.tight_layout()
-    plt.show()
+    if show:
+        plt.show()
 
 
 def interactive_cube_gui():
@@ -675,7 +679,7 @@ def interactive_cube_gui():
                         
                         # 添加朝向标记
                         if ori == 1:
-                            block_label += "⟲"  # 翻转
+                            block_label += EDGE_FLIP_MARK  # 翻转
                         
                         # 颜色：棱块 蓝/青/紫系
                         if is_moved and ori != 0:
@@ -741,7 +745,7 @@ def interactive_cube_gui():
         
         # 朝向符号说明
         ax_main.text(legend_x, legend_y - 2.6, "符号:", fontsize=7, fontweight='bold')
-        ax_main.text(legend_x, legend_y - 2.88, "↻顺时针 ↺逆时针 ⟲翻转", fontsize=6)
+        ax_main.text(legend_x, legend_y - 2.88, f"↻顺时针 ↺逆时针 {EDGE_FLIP_MARK}翻转", fontsize=6)
         ax_main.text(legend_x, legend_y - 3.12, "U/L/F/R/B/D=面中心", fontsize=5.5, style='italic')
         
         # 统计信息（右侧）- 移到魔方右边不重叠的位置
@@ -1139,4 +1143,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
